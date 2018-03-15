@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+    <link rel='stylesheet' href='/css/layout.css' type="text/css" >
+</head>
+
+<body>
+    
+
+    <div id = "spa" >
+    <h1>Todo List</h1>
+
+    <table width = 700px>
+        <thead>
+            <tr id=hdr>
+                <th width = 450px>Description</td>
+                <th width = 110px>Completion Date</td>
+                <th width = 50px>Status</td>
+                <th width = 40px>delete</td>
+        </tr>
+        </thead> 
+        <% todolist.forEach(function(todo, index) { %>
+        <tr>
+            <td><%= todo.description %></td>
+            <td><%= todo.completiondate %></td>
+            <td><%= todo.status %></td>
+            <td><a href="/todo/delete/<%= index %>">✘</a> </td>
+        </tr>
+        <% }); %>
+    </table>
+
+
+<div class= "spa-input"  > 
+        <form action="/todo/add/" method="post">
+          <p>
+              <label for="newtodo">New Todo Item</label>
+              <input type="text" name="newtodo" id="newtodo" autofocus />
+              <input type="text" name="completiondate" id="completiondate" autofocus />
+              <input type="text" name="status" id="status" autofocus />
+              <input type="submit" />
+          </p>
+      </form>
+      <!--<button>Add</button>-->
+      </div>
+    </div>
+
+<div class="spa-slider"></div>
+</div>
+<!-- put the javascript at the end as it gives the appearance of the page loading faster -->
+<script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://localhost:8080');
+        socket.on('connect', function (data) {
+            socket.emit('joined', 'Client connected');
+        })
+    </script>
+</body>
+</html> 
