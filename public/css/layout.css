@@ -46,7 +46,7 @@ td {
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-#spa {
+#todo {
     position : absolute;
     top : 8px;
     left : 8px;
@@ -55,13 +55,13 @@ td {
     border-radius : 8px 8px 0 8px;
     background-color : #fff;
 }
-.spa-input {
+.todo-input {
     position : relative;
     top: 10px;
     left: 5px;
 }
 
-.spa-slider {
+.popup-slider {
     position : absolute;
     bottom : 0;
     right : 2px;
