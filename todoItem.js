@@ -1,6 +1,7 @@
-module.exports = exports = function todoitem(description, status){
-    var description = description;
-    var status = status;
+module.exports = function todoitem(description, completiondate, status){
+    this.description = description;
+    this.completiondate = completiondate;
+    this.status = status;
 
     this.getdescription = function (){
         return description;

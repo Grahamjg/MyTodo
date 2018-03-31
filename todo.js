@@ -1,38 +1,20 @@
+// Phase one: Get the basics working
+// Using different set of controle more related to the property 
+//   eg use a data time control for completion date
+//      use a dropdown list equivalent for status
+// Build the code into seperate files rather than one large one
+
 var express = require('express');
 var cookiesession = require('cookie-session');
 var bodyparser = require('body-parser');
 
 var todo = express();
 
-//var jsdom = require("jsdom");
-//var window = jsdom.window;
-// window.$ = require('jquery')(window);
-//require("jsdom").env("", function(err, window) {
-//    if (err) {
-//        console.error(err);
-//      return;
-//   }
- //
- //   var $ = require("jquery")(window);
-//});
-
-//var $ = require('jquery');
-//var $ = require('jquery')(require("jsdom").parentWindow);
-//var jsdom = require("jsdom"); 
-//$ = require("jquery"); 
-//window.$ = require('jquery')(window);
-//var jsdom = require('jsdom')
-//  , myWindow = jsdom.createWindow
-  
-//  ;
-//var aWindow = $.createWindow;
-//var $ = require('jQuery').createWindow
-
 var http = require('http');
 var server = http.createServer(todo);
 var io = require('socket.io')(server);
 var urlencodedParser = bodyparser.urlencoded({ extended: true });
-var mySocket;
+//var mySocket;
 
 var tdo = function todoitem(description, completiondate, status){
     this.description = description;
@@ -40,6 +22,7 @@ var tdo = function todoitem(description, completiondate, status){
     this.status = status;
 };
 
+var statusEnum = Object.freeze({"To Do":1, "In Progress":2, "Blocked":3, "Review":4, "Complete":5 })
 var options = {
     host: 'localhost',
     port: 8080,
@@ -50,7 +33,7 @@ tdo.prototype.desc = function(){
     return this.description;
 };
 
-var html = '';
+//var html = '';
 todo.use(cookiesession({
     name : 'todo',
     keys : ['todosecret'],
@@ -63,24 +46,45 @@ create an empty array before continuing */
     if (typeof(req.session.todolist) == 'undefined') {
         req.session.todolist = [];
     }
-    next();
+
+    if (req.session.isEdit != 'undefined' &&  !req.session.isEdit ) {
+        req.session.addtodo = new tdo('', '', '');
+    }
+
+    if (typeof(req.session.addtodo) == 'undefined') {
+        req.session.addtodo = new tdo('', '', '');
+        req.session.isEdit = false;
+        req.session.recordindex = -1;
+    }
     
+    next();
 })
 .use(express.static(__dirname + '/public'))
 
 /* The to do list and the form are displayed */
 .get('/todo', function(req, res) { 
-    //req.session.todolist.push(new tdo('aaa1', 'fff', '0'));
-    res.render('layout.ejs', {todolist: req.session.todolist});
+    res.render('layout.ejs', {todolist: req.session.todolist
+                              ,addtodo: req.session.addtodo
+                              ,isedit: req.session.isEdit});
 })
 
 /* Adding an item to the to do list */
 .post('/todo/add/', urlencodedParser, function(req, res) {
     if (req.body.newtodo != '') {
- 
-        req.session.todolist.push(
-            new tdo (req.body.newtodo, req.body.completiondate, req.body.status));
+        if (req.session.isEdit) {
+            req.session.todolist[req.session.recordindex] = 
+                new tdo (req.body.newtodo, req.body.completiondate, req.body.status);
+        }
+        else {
+            req.session.todolist.push(
+                new tdo (req.body.newtodo, req.body.completiondate, req.body.status));
+        }
     }
+    
+    // set the index back once added
+    req.session.recordindex = -1;
+    req.session.isEdit = false;
+    req.session.addtodo = new tdo('', '', '');
     res.redirect('/todo');
 })
 
@@ -89,19 +93,20 @@ create an empty array before continuing */
     if (req.params.id != '') {
         req.session.todolist.splice(req.params.id, 1);
     }
+    req.session.isEdit = false;
     res.redirect('/todo');
 })
 
 .get('/todo/edit/:id',  function(req, res) {
-
     if (req.params.id != '') {
-        var item = req.session.todolist.slice(req.params.id, 1);
-        //$("#newtodo").val("hello");
-        //mySocket.emit('edit', item);
-        mySocket.emit('messages', 'Hello from server')
- 
+        // Store the current edited index
+        // the req.param.id does not seem to have it when in add mode
+        req.session.recordindex = req.params.id;
+        var item = req.session.todolist[req.params.id];
+        req.session.addtodo = item;
+        req.session.isEdit = true;
+        res.redirect('/todo',);
     }
- 
 })
 
 io.sockets.on('connection', function(socket) {
@@ -112,7 +117,6 @@ io.sockets.on('connection', function(socket) {
         console.log(data);
         //socket.emit('messages', 'Hello from server')
     });
-    
 });
 
 todo.use(function(req, res, next){
@@ -120,5 +124,4 @@ todo.use(function(req, res, next){
     res.status(404).send('Page cannot be found!');
 });
 
-//todo.listen(8080);
 server.listen(8080);
