@@ -1,15 +1,11 @@
 <!DOCTYPE html>
-
 <html>
-
-
 <head>
     <link rel='stylesheet' href='/css/layout.css' type="text/css" >
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 
 <body>
-    
 
     <div id = "todo" >
         <h1>Todo List</h1>
@@ -17,7 +13,7 @@
         <table width = 700px>
             <thead>
                 <tr id=hdr>
-                    <th width = 450px>Description</td>
+                    <th width = 480px>Description</td>
                     <th width = 110px>Completion Date</td>
                     <th width = 50px>Status</td>
                     <th width = 40px>delete</td>
@@ -41,11 +37,16 @@
         <div class= "todo-input"  > 
             <form action="/todo/add/" method="post">
                 <p>
-                    <label for="newtodo">New Todo Item:</label>
-                    <input type="text" name="newtodo" id="newtodo" autofocus />
-                    <input type="text" name="completiondate" id="completiondate" autofocus />
-                    <input type="text" name="status" id="status" autofocus />
-                    <input type="submit" />
+                    <label for="newtodo">Todo Item:  </label>
+                    <input type="text" name="newtodo" id="newtodo" autofocus value="<%= addtodo.description %>" />
+                    <input type="date" name="completiondate" id="completiondate" autofocus value="<%= addtodo.completiondate %>"/>
+                    <input type="text" name="status" id="status" autofocus value="<%= addtodo.status %>"/>
+                    <% if (isedit) { %>
+                        <input type="submit" name="addoredit" id ="addoredit" value=" Update " />
+                    <% } else { %>
+                        <input type="submit" name="addoredit" id ="addoredit" value="  Add   " />
+                    <% } %>
+                    <!-- <input type="submit" name="addoredit" id ="addoredit" value="isedit ? Edit ; Add %>" /> -->
                 </p>
             </form>
         </div>
@@ -56,28 +57,18 @@
 
 <!-- put the javascript at the end as it gives the appearance of the page loading faster -->
 <script src="/socket.io/socket.io.js"></script>
-
-    <script>
-
-
-
-
-
-        var socket = io.connect('http://localhost:8080');
-        socket.on('connect', function (data) {
-            socket.emit('joined', document);
-        })
-        socket.on('messages',function(data) {
-                alert(data);
-        })
-$('#td_edit').mousedown (function (event, res){
-    //alert(event);
-})
-
-        socket.on('edit', function(data) {
-            alert(data);
-            //document.getElementById("newtodo"); 
-        })
-    </script>
+<script>
+    var socket = io.connect('http://localhost:3000');
+    socket.on('connect', function (data) {
+        socket.emit('joined', document);
+    })
+    socket.on('messages',function(data) {
+        alert(data);
+    })
+    socket.on('edit', function(data) {
+        alert(data);
+        //document.getElementById("newtodo"); 
+    })
+</script>
 </body>
 </html> 
