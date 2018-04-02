@@ -40,8 +40,8 @@ todo.use(cookiesession({
     maxAge : 20*60*1000}))
     
     
-/* If there is no to do list in the session, 
-create an empty array before continuing */
+// If there is no to do list in the session, 
+// create an empty array before continuing 
 .use(function(req, res, next){
     if (typeof(req.session.todolist) == 'undefined') {
         req.session.todolist = [];
@@ -61,14 +61,14 @@ create an empty array before continuing */
 })
 .use(express.static(__dirname + '/public'))
 
-/* The to do list and the form are displayed */
+// The to do list and the form are displayed 
 .get('/todo', function(req, res) { 
     res.render('layout.ejs', {todolist: req.session.todolist
                               ,addtodo: req.session.addtodo
                               ,isedit: req.session.isEdit});
 })
 
-/* Adding an item to the to do list */
+// Adding an item to the to do list 
 .post('/todo/add/', urlencodedParser, function(req, res) {
     if (req.body.newtodo != '') {
         if (req.session.isEdit) {
@@ -76,6 +76,8 @@ create an empty array before continuing */
                 new tdo (req.body.newtodo, req.body.completiondate, req.body.status);
         }
         else {
+            var tditem = new tdo (req.body.newtodo, req.body.completiondate, req.body.status);
+            console.log (tditem.description);
             req.session.todolist.push(
                 new tdo (req.body.newtodo, req.body.completiondate, req.body.status));
         }
@@ -88,7 +90,7 @@ create an empty array before continuing */
     res.redirect('/todo');
 })
 
-/* Deletes an item from the to do list */
+// Deletes an item from the to do list 
 .get('/todo/delete/:id', function(req, res) {
     if (req.params.id != '') {
         req.session.todolist.splice(req.params.id, 1);

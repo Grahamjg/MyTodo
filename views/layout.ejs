@@ -58,7 +58,7 @@
 <!-- put the javascript at the end as it gives the appearance of the page loading faster -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://localhost:8080');
+    var socket = io.connect('http://localhost:3000');
     socket.on('connect', function (data) {
         socket.emit('joined', document);
     })

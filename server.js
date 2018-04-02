@@ -1,22 +1,43 @@
-//var app = require('./todo');
-var express = require('express');
+
+
+var express = require('express'),
+rootDir = __dirname,
+config = require('./config');
+var cookiesession = require('cookie-session');
+var bodyparser = require('body-parser');
 var http = require('http');
+
+// not using this yet
+var io = require('socket.io')(server);
+
 var todo = express();
-
 var server = http.createServer(todo);
-//var io = require('socket.io')(server);
 
-//io.sockets.on('connection', function(socket) {
-//    console.log('A client is connected');
-    //session.socket = socket;
-    //mySocket = socket;
-//    socket.on('joined', function (data) {
-//        console.log(data);
-        //socket.emit('messages', 'Hello from server')
-//    });
-//});
-server.listen(process.env.PORT || 3000);
-//server.listen(8080);
-server.on('listening', function() {
-  console.log('Server listening on http://localhost:%d', this.address().port);
+var settings = {
+	config: config
+};
+
+var urlencodedParser = bodyparser.urlencoded({ extended: true }); 
+
+todo.set('port', config.PORT || process.env.port || 3000)
+ .use(cookiesession({
+    name : 'todo',
+    keys : ['todosecret'],
+    maxAge : 20*60*1000}))
+
+.use(express.static(__dirname + '/public'))
+.use(urlencodedParser);
+
+//This allows you to require files relative to the root
+requireFromRoot = (function(root) {
+  return function(resource) {
+      return require(root + "/" + resource);
+  }
+})(__dirname);
+routes = require('./routes')(todo, settings);
+
+http.createServer(todo).listen(todo.get('port'), function(){
+  console.log('Express server listening on port ' + todo.get('port'));
 });
+
+
