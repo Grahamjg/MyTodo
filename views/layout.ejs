@@ -9,13 +9,13 @@
 
     <div id = "todo" >
         <h1>Todo List</h1>
-
-        <table width = 700px>
+<div class="todotable">
+        <table width = 700px id="idTable" class="idTable">
             <thead>
                 <tr id=hdr>
                     <th width = 480px>Description</td>
                     <th width = 110px>Completion Date</td>
-                    <th width = 50px>Status</td>
+                    <th width = 60px>Status</td>
                     <th width = 40px>delete</td>
                         <th width = 40px>edit</td>
             </tr>
@@ -23,7 +23,9 @@
             <% todolist.forEach(function(todo, index) { %>
             <tr>
                 <td><%= todo.description %></td>
-                <td><%= todo.completiondate %></td>
+                <td class="timeInd">
+                    <%= todo.completiondate %>
+                </td>
                 <td><%= todo.status %></td>
                 <td><a href="/todo/delete/<%= index %>">✘</a> </td>
                 <td>
@@ -32,15 +34,26 @@
             </tr>
             <% }); %>
         </table>
-
+    </div>
 
         <div class= "todo-input"  > 
+            <div class="todo-add">
             <form action="/todo/add/" method="post">
                 <p>
-                    <label for="newtodo">Todo Item:  </label>
+                    <label id="tdlabel" for="newtodo">Todo Item:  </label>
                     <input type="text" name="newtodo" id="newtodo" autofocus value="<%= addtodo.description %>" />
-                    <input type="date" name="completiondate" id="completiondate" autofocus value="<%= addtodo.completiondate %>"/>
-                    <input type="text" name="status" id="status" autofocus value="<%= addtodo.status %>"/>
+                    <input type="date" name="completiondate" id="completiondate" 
+                            autofocus value="<%= addtodo.completiondate %>" />
+                    <!-- <input type="text" name="status" id="status" autofocus value="<%= addtodo.status %>"/> -->
+                    <select name='status' id='status' value="<%= addtodo.status %>">
+                        <% for (status in statusVal) { %>
+                            <% if (addtodo.status == status) { %>
+                                <option selected="selected"><%= status %></option>
+                            <% } else { %>
+                                <option><%= status %></option>
+                            <% } %>
+                        <% }; %>
+                    </select>
                     <% if (isedit) { %>
                         <input type="submit" name="addoredit" id ="addoredit" value=" Update " />
                     <% } else { %>
@@ -50,6 +63,7 @@
                 </p>
             </form>
         </div>
+        </div>
     </div>
 
     <div class="popup-slider"></div>
@@ -58,7 +72,50 @@
 <!-- put the javascript at the end as it gives the appearance of the page loading faster -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+    $(document).ready(function(){
+    $('#idTable td.timeInd').each(function(){
+        //alert($(this).text());
+               
+        var diff = Date.daysFromNow(new Date($(this).text()));
+        if (diff) {
+            //alert (diff)
+            //var c = diff < 25 ? rgbToHex((255 - (diff * 10)),0,0) : '#0000';
+            var grad = diff < 25 ? 100 - (diff * 4) : 0;
+            var step = grad + 5;
+            //var txt = 'linear-gradient(to right, red,red ' + grad + '%,grey ' + grad + '%, grey ' + step + '%, red ' + step + '%' + ' , white)'
+            var txt = 'linear-gradient(to right, red,red ' + grad + '%,red ' + grad + '%, lightgray ' + step + '%, lightgray ' + step + '%' + ' , white)'
+            //alert(txt);
+            $(this).css('background-image', txt );
+        }
+    });
+});
+
+
+
+
+Date.daysFromNow = function(date2 ) {
+    var oneday = 1000*60*60*24;
+    //alert(oneday);
+    var date1_ms = Date.now();
+    //alert(date1_ms);
+    var date2_ms = date2.getTime();
+    //alert(date2_ms);
+    var diff_ms = date2_ms - date1_ms;
+    //alert(diff_ms);
+    return Math.round(0.5 + diff_ms/oneday);
+}
+
     var socket = io.connect('http://localhost:3000');
+    //alert(socket);
     socket.on('connect', function (data) {
         socket.emit('joined', document);
     })
