@@ -10,10 +10,12 @@ module.exports = function(app, settings){
         if (req.body.newtodo != '') {
             if (req.session.isEdit) {
                 req.session.todolist[req.session.recordindex] = 
-                    new tditem (req.body.newtodo, req.body.completiondate, req.body.status);
+                    new tditem (req.body.newtodo, req.body.completiondate, 
+                        req.body.status);
             }
             else {
-                var td = new tditem (req.body.newtodo, req.body.completiondate, req.body.status);
+                //var td = new tditem (req.body.newtodo, req.body.completiondate, 
+                //    req.body.status.selectedIndex);
                 req.session.todolist.push(
                     new tditem (req.body.newtodo, req.body.completiondate, req.body.status));
             }
