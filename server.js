@@ -5,12 +5,7 @@ var cookiesession = require('cookie-session');
 var bodyparser = require('body-parser');
 var http = require('http');
 
-
-
 var todo = express();
-//var server = http.createServer(todo);
-
-
 var settings = {
 	config: config
 };
@@ -43,8 +38,12 @@ var io = require('socket.io')
 
 io.sockets.on('connection', function(socket) {
   console.log('A client is connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
   socket.on('joined', function (data) {
-      //console.log(data);
+      console.log(data);
       //socket.emit('messages', 'Hello from server')
   });
 });

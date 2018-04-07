@@ -26,22 +26,22 @@ body {
     padding: 5px;
     table-layout: fixed;
   width: 180px;
-  border: 2px solid blue;
+  border: 2px solid darkslategrey;
   border-collapse: collapse;
 }
 thead{
     position : relative;
     top: 5px;
     left: 5px;
-    border: 2px solid blue;
-    background-color: aquamarine;
+    border: 2px solid darkslategrey;
+    background-color: lightslategray;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 td {
-    border: 1px solid blue;
+    border: 1px solid darkslategrey;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -69,7 +69,7 @@ h1 {
     top : 10px;
     left : 20px;
     width: 800px;
-    border: 1px solid blue;
+    border: 1px solid darkslategrey;
     border-radius : 8px 8px 0 0;
     background-image: linear-gradient(to bottom right, silver, white 50%, white) ;
     margin: 5px;
@@ -81,7 +81,7 @@ h1 {
     top: 0px;
     left: 20px;
     width: 800px;
-    border: 1px solid blue;
+    border: 1px solid darkslategrey;
     border-radius : 0 0 8px 8px;
     background-color : #fff;
     margin: 5px;
