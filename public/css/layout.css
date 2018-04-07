@@ -1,11 +1,11 @@
 * {
-    margin: 0;
-    padding:0;
+    margin: 10;
+    padding:10;
     -webkit-box-sizing : border-box;
     -moz-box-sizing : border-box;
     box-sizing : border-box;
 }
-h1,h2,h3,h4,h5,h6,p {margin-bottom : 10px;}
+h1,h2,h3,h4,h5,h6,p {margin-bottom : 20px;}
 ol,ul,dl {list-style-position : inside;}
 /** End reset*/
 
@@ -14,51 +14,90 @@ body {
     font : 13px 'Trebuchet MS', Verdana,Helvetica, Arial, sans-serif;
     color : #444;
     background-color : #888;
-    border: 5px;
+    border: 10px;
 }
 
 
 
-table {
+.idTable {
     position : relative;
     top: 5px;
-    left: 5px;
+    left: 20px;
     padding: 5px;
     table-layout: fixed;
   width: 180px;
-  border: 2px solid blue;
+  border: 2px solid darkslategrey;
   border-collapse: collapse;
 }
 thead{
     position : relative;
     top: 5px;
     left: 5px;
-    border: 2px solid blue;
-    background-color: aquamarine;
+    border: 2px solid darkslategrey;
+    background-color: lightslategray;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 td {
-    border: 1px solid blue;
+    border: 1px solid darkslategrey;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+.timeInd {
+      text-align: center;
+  }
 #todo {
     position : absolute;
-    top : 8px;
-    left : 8px;
-    bottom : 8px;
-    right : 8px;
+    top : 15px;
+    left : 20px;
+    bottom : 15px;
+    right : 20px;
     border-radius : 8px 8px 0 8px;
     background-color : #fff;
 }
+h1 {
+    position : relative;
+    top : 8px;
+    left : 50px;
+}
+
+.todotable {
+    position : relative;
+    top : 10px;
+    left : 20px;
+    width: 800px;
+    border: 1px solid darkslategrey;
+    border-radius : 8px 8px 0 0;
+    background-image: linear-gradient(to bottom right, silver, white 50%, white) ;
+    margin: 5px;
+    padding: 1px 1px 20px 1px;
+    
+}
 .todo-input {
     position : relative;
-    top: 20px;
-    left: 5px;
+    top: 0px;
+    left: 20px;
+    width: 800px;
+    border: 1px solid darkslategrey;
+    border-radius : 0 0 8px 8px;
+    background-color : #fff;
+    margin: 5px;
+    padding: 10px 1px 10px 1px;
+    background-image: linear-gradient(to bottom right, white, white 50%, silver) ;
+}
+
+.todo-add {
+    position : relative;
+    top: 0px;
+    left: 20px;
+    width: 800px;
+}
+#tdlabel {
+    position: relative;
+    left: 2px;
 }
 #newtodo {
     position: relative;

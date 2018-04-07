@@ -9,13 +9,13 @@
 
     <div id = "todo" >
         <h1>Todo List</h1>
-
-        <table width = 700px>
+<div class="todotable">
+        <table width = 700px id="idTable" class="idTable">
             <thead>
                 <tr id=hdr>
                     <th width = 480px>Description</td>
                     <th width = 110px>Completion Date</td>
-                    <th width = 50px>Status</td>
+                    <th width = 60px>Status</td>
                     <th width = 40px>delete</td>
                         <th width = 40px>edit</td>
             </tr>
@@ -23,7 +23,9 @@
             <% todolist.forEach(function(todo, index) { %>
             <tr>
                 <td><%= todo.description %></td>
-                <td><%= todo.completiondate %></td>
+                <td class="timeInd">
+                    <%= todo.completiondate %>
+                </td>
                 <td><%= todo.status %></td>
                 <td><a href="/todo/delete/<%= index %>">✘</a> </td>
                 <td>
@@ -32,32 +34,96 @@
             </tr>
             <% }); %>
         </table>
-
+    </div>
 
         <div class= "todo-input"  > 
+            <div class="todo-add">
             <form action="/todo/add/" method="post">
                 <p>
-                    <label for="newtodo">Todo Item:  </label>
+                    <label id="tdlabel" for="newtodo">Todo Item:  </label>
                     <input type="text" name="newtodo" id="newtodo" autofocus value="<%= addtodo.description %>" />
-                    <input type="date" name="completiondate" id="completiondate" autofocus value="<%= addtodo.completiondate %>"/>
-                    <input type="text" name="status" id="status" autofocus value="<%= addtodo.status %>"/>
+                    <input type="date" name="completiondate" id="completiondate" 
+                            autofocus value="<%= addtodo.completiondate %>" />
+                    <select name='status' id='status' value="<%= addtodo.status %>">
+                        <% for (status in statusVal) { %>
+                            <% if (addtodo.status == status) { %>
+                                <option selected="selected"><%= status %></option>
+                            <% } else { %>
+                                <option><%= status %></option>
+                            <% } %>
+                        <% }; %>
+                    </select>
                     <% if (isedit) { %>
                         <input type="submit" name="addoredit" id ="addoredit" value=" Update " />
                     <% } else { %>
                         <input type="submit" name="addoredit" id ="addoredit" value="  Add   " />
                     <% } %>
-                    <!-- <input type="submit" name="addoredit" id ="addoredit" value="isedit ? Edit ; Add %>" /> -->
                 </p>
             </form>
+        </div>
         </div>
     </div>
 
     <div class="popup-slider"></div>
 </div>
 
-<!-- put the javascript at the end as it gives the appearance of the page loading faster -->
+<!-- put the javascript at the end as it gives the appearance of the page loading faster - apparently-->
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
+//var socket = io();
+/*
+$(function () {
+    var socket = io();
+    $('form').submit(function(){
+      socket.emit('joined', 'joined');
+      return false;
+    });
+  });
+*/
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function calculateGradientString (diff) {
+    var grad = diff <= 10 ? 100 - (diff * 10) : 0;
+    var step = grad > 0 ? grad + 5: grad;
+    var factor = diff <= 10 ?  255 -(grad * 2) : 220;
+    var eigthFactor = 154+ Math.round(factor/4.0);
+    var colorRed = rgbToHex(255, factor, factor);
+    var colorGrey = rgbToHex(eigthFactor,eigthFactor,eigthFactor);
+    return 'linear-gradient(to right, ' + colorRed + ',' +colorRed + ' ' + grad + '%,' 
+    + colorRed + ' ' + grad + '%, '+ colorGrey + ' ' + step + '%, ' 
+    + colorGrey + ' ' + step + '%' + ' , white)'
+}
+    
+
+$(document).ready(function(){
+    $('#idTable td.timeInd').each(function(){
+        var diff = Date.daysFromNow(new Date($(this).text()));
+        if (diff >= 0) {
+            $(this).css('background-image', calculateGradientString (diff) );
+        }
+    });
+});
+
+
+
+
+Date.daysFromNow = function(date2 ) {
+    var oneday = 1000*60*60*24;
+    var date1_ms = Date.now();
+    var date2_ms = date2.getTime();
+    var diff_ms = date2_ms - date1_ms;
+    return Math.round(0.5 + diff_ms/oneday);
+}
+
     var socket = io.connect('http://localhost:3000');
     socket.on('connect', function (data) {
         socket.emit('joined', document);
@@ -67,7 +133,6 @@
     })
     socket.on('edit', function(data) {
         alert(data);
-        //document.getElementById("newtodo"); 
     })
 </script>
 </body>

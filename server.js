@@ -1,5 +1,3 @@
-
-
 var express = require('express'),
 rootDir = __dirname,
 config = require('./config');
@@ -7,12 +5,7 @@ var cookiesession = require('cookie-session');
 var bodyparser = require('body-parser');
 var http = require('http');
 
-// not using this yet
-var io = require('socket.io')(server);
-
 var todo = express();
-var server = http.createServer(todo);
-
 var settings = {
 	config: config
 };
@@ -20,10 +13,11 @@ var settings = {
 var urlencodedParser = bodyparser.urlencoded({ extended: true }); 
 
 todo.set('port', config.PORT || process.env.port || 3000)
- .use(cookiesession({
-    name : 'todo',
-    keys : ['todosecret'],
-    maxAge : 20*60*1000}))
+.use(cookiesession({
+  name : 'todo',
+  keys : [config.SESSION_SECRET],
+  maxAge : config.maxAge}))
+
 
 .use(express.static(__dirname + '/public'))
 .use(urlencodedParser);
@@ -36,8 +30,22 @@ requireFromRoot = (function(root) {
 })(__dirname);
 routes = require('./routes')(todo, settings);
 
-http.createServer(todo).listen(todo.get('port'), function(){
-  console.log('Express server listening on port ' + todo.get('port'));
+var io = require('socket.io')
+  .listen(http.createServer(todo)
+    .listen(todo.get('port'), function(){
+      console.log('Express server listening on port ' + todo.get('port'));
+}));
+
+io.sockets.on('connection', function(socket) {
+  console.log('A client is connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
+  socket.on('joined', function (data) {
+      console.log(data);
+      //socket.emit('messages', 'Hello from server')
+  });
 });
 
 
