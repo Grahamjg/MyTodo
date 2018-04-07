@@ -44,7 +44,6 @@
                     <input type="text" name="newtodo" id="newtodo" autofocus value="<%= addtodo.description %>" />
                     <input type="date" name="completiondate" id="completiondate" 
                             autofocus value="<%= addtodo.completiondate %>" />
-                    <!-- <input type="text" name="status" id="status" autofocus value="<%= addtodo.status %>"/> -->
                     <select name='status' id='status' value="<%= addtodo.status %>">
                         <% for (status in statusVal) { %>
                             <% if (addtodo.status == status) { %>
@@ -59,7 +58,6 @@
                     <% } else { %>
                         <input type="submit" name="addoredit" id ="addoredit" value="  Add   " />
                     <% } %>
-                    <!-- <input type="submit" name="addoredit" id ="addoredit" value="isedit ? Edit ; Add %>" /> -->
                 </p>
             </form>
         </div>
@@ -69,9 +67,20 @@
     <div class="popup-slider"></div>
 </div>
 
-<!-- put the javascript at the end as it gives the appearance of the page loading faster -->
+<!-- put the javascript at the end as it gives the appearance of the page loading faster - apparently-->
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
+//var socket = io();
+/*
+$(function () {
+    var socket = io();
+    $('form').submit(function(){
+      socket.emit('joined', 'joined');
+      return false;
+    });
+  });
+*/
 
 function componentToHex(c) {
     var hex = c.toString(16);
@@ -81,20 +90,25 @@ function componentToHex(c) {
 function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
-    $(document).ready(function(){
+
+function calculateGradientString (diff) {
+    var grad = diff <= 10 ? 100 - (diff * 10) : 0;
+    var step = grad > 0 ? grad + 5: grad;
+    var factor = diff <= 10 ?  255 -(grad * 2) : 220;
+    var eigthFactor = 154+ Math.round(factor/4.0);
+    var colorRed = rgbToHex(255, factor, factor);
+    var colorGrey = rgbToHex(eigthFactor,eigthFactor,eigthFactor);
+    return 'linear-gradient(to right, ' + colorRed + ',' +colorRed + ' ' + grad + '%,' 
+    + colorRed + ' ' + grad + '%, '+ colorGrey + ' ' + step + '%, ' 
+    + colorGrey + ' ' + step + '%' + ' , white)'
+}
+    
+
+$(document).ready(function(){
     $('#idTable td.timeInd').each(function(){
-        //alert($(this).text());
-               
         var diff = Date.daysFromNow(new Date($(this).text()));
-        if (diff) {
-            //alert (diff)
-            //var c = diff < 25 ? rgbToHex((255 - (diff * 10)),0,0) : '#0000';
-            var grad = diff < 25 ? 100 - (diff * 4) : 0;
-            var step = grad + 5;
-            //var txt = 'linear-gradient(to right, red,red ' + grad + '%,grey ' + grad + '%, grey ' + step + '%, red ' + step + '%' + ' , white)'
-            var txt = 'linear-gradient(to right, red,red ' + grad + '%,red ' + grad + '%, lightgray ' + step + '%, lightgray ' + step + '%' + ' , white)'
-            //alert(txt);
-            $(this).css('background-image', txt );
+        if (diff >= 0) {
+            $(this).css('background-image', calculateGradientString (diff) );
         }
     });
 });
@@ -104,18 +118,13 @@ function rgbToHex(r, g, b) {
 
 Date.daysFromNow = function(date2 ) {
     var oneday = 1000*60*60*24;
-    //alert(oneday);
     var date1_ms = Date.now();
-    //alert(date1_ms);
     var date2_ms = date2.getTime();
-    //alert(date2_ms);
     var diff_ms = date2_ms - date1_ms;
-    //alert(diff_ms);
     return Math.round(0.5 + diff_ms/oneday);
 }
 
     var socket = io.connect('http://localhost:3000');
-    //alert(socket);
     socket.on('connect', function (data) {
         socket.emit('joined', document);
     })
@@ -124,7 +133,6 @@ Date.daysFromNow = function(date2 ) {
     })
     socket.on('edit', function(data) {
         alert(data);
-        //document.getElementById("newtodo"); 
     })
 </script>
 </body>
